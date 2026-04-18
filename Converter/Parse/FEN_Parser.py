@@ -30,7 +30,7 @@ class FEN_Parser:
         :return: the 12x8x8 chess tensor
         """
         board = chess.Board(fen_row)
-        tensor = np.zeros((12, 8, 8), dtype=int)
+        tensor = np.zeros((12, 8, 8), dtype=np.float32)
         for square, piece in board.piece_map().items():
             row = 7 - (square // 8)
             col = square % 8
@@ -45,4 +45,5 @@ class FEN_Parser:
 if __name__ == "__main__":
     pd_data = get_dataset(1)
     parser = FEN_Parser()
+    print(pd_data)
     print(parser.generate_matrices(pd_data["FEN"][0]))

@@ -23,7 +23,8 @@ def add_piece_board(piece_type, piece_color, board_to_add_on, matrix):
                 square = chess.square(col, 7 - row)
                 board_to_add_on.set_piece_at(square, piece)
 if __name__ == "__main__":
-    pd_data = get_dataset(1)
+    pd_data = get_dataset(12)
+    print(pd_data)
     parser = FEN_Parser()
     tensor = parser.generate_matrices(pd_data["FEN"][0])
     board_temp = chess.Board(pd_data["FEN"][0])
