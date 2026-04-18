@@ -43,6 +43,6 @@ class FEN_Parser:
         return tensor
 
 if __name__ == "__main__":
-    pd_data = get_dataset(100)
-    parser = Parser(pd_data)
+    pd_data = get_dataset(1)
+    parser = FEN_Parser()
     print(parser.generate_matrices(pd_data["FEN"][0]))
