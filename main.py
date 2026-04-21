@@ -1,5 +1,5 @@
 import tkinter as tk
-from ui import ChessApp
+from Game.ui import ChessApp
 
 def main():
     root = tk.Tk()

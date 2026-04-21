@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Optional
 import chess
 
-from config import PIECE_VALUES
-from move_history import format_move_entry, rebuild_history_from_board
+from Game.config import PIECE_VALUES
+from Game.move_history import format_move_entry, rebuild_history_from_board
 
 
 @dataclass

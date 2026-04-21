@@ -1,5 +1,5 @@
 import chess
-from config import PIECE_NAMES
+from Game.config import PIECE_NAMES
 
 def format_move_entry(board_before: chess.Board, move: chess.Move) -> str:
     """

@@ -30,7 +30,7 @@ class FEN_Parser:
         :return: the 12x8x8 chess tensor
         """
         board = chess.Board(fen_row)
-        tensor = np.zeros((12, 8, 8), dtype=int)
+        tensor = np.zeros((12, 8, 8), dtype=np.float32)
         for square, piece in board.piece_map().items():
             row = 7 - (square // 8)
             col = square % 8

@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 from typing import Optional
 
-from config import (
+from Game.config import (
     BOARD_SIZE,
     SQUARE_SIZE,
     LIGHT_COLOR,
@@ -22,9 +22,9 @@ from config import (
     FONT_PIECE,
     UNICODE_PIECES,
 )
-from settings import GameSettings
-from move_provider import MoveProvider, RandomMoveProvider
-from game_controller import GameController
+from Game.settings import GameSettings
+from Game.move_provider import MoveProvider, RandomMoveProvider, model_moveProvider
+from Game.game_controller import GameController
 
 class ChessApp:
     def __init__(self, root: tk.Tk):
@@ -151,7 +151,7 @@ class GameFrame(tk.Frame):
         self.move_queue: "queue.Queue[object]" = queue.Queue()
         self.ai_thinking = False
 
-        self.opponent: Optional[MoveProvider] = RandomMoveProvider() if settings.opponent_enabled else None
+        self.opponent: Optional[MoveProvider] = model_moveProvider if settings.opponent_enabled else None
 
         self.status_var = tk.StringVar(value=self.controller.status_text())
         self.info_var = tk.StringVar(value="Select a piece to begin.")
