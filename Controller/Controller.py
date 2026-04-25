@@ -1,6 +1,8 @@
 
 from Converter.DataAccess.DatasetReader import get_dataset
 from Converter.Parse.FEN_Parser import FEN_Parser
+import torch
+import torch.nn.functional as F
 
 def generate_training_data():
     parser = FEN_Parser()
@@ -12,8 +14,11 @@ def generate_training_data():
         if evaluation.startswith("#"): 
             evaluation = evaluation.strip("#")
         evaluation = int(evaluation)
+        evaluation = F.tanh(torch.tensor(evaluation/400))
+        evaluation = evaluation.item()
         data_rows.loc[row.Index, "Evaluation"] = evaluation
     return data_rows
+
 
 
 if __name__ == "__main__":

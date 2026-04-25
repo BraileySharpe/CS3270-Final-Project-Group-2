@@ -27,29 +27,62 @@ class MyDataset(Dataset):
 
 
 
-class CNN_Model(nn.Module):
-	def __init__(self):
+class ResBlock(nn.Module):
+	def __init__(self, channels):
 		super().__init__()
-		self.feature_extract= nn.Sequential(
-			nn.Conv2d(12, 32, kernel_size=3, padding=1),
+		self.block = nn.Sequential(
+			nn.Conv2d(channels, channels, kernel_size=3, padding=1),
+			nn.BatchNorm2d(channels),
 			nn.ReLU(),
-			nn.Conv2d(32, 64, kernel_size=3, padding=1),
-			nn.ReLU(), 
-			nn.Conv2d(64, 128, kernel_size=3, padding=1),
-			nn.ReLU(),
-		)
-		self.fc= nn.Sequential(
-			nn.Flatten(), 
-			nn.Linear(128*8*8, 256),
-			nn.ReLU(), 
-			nn.Linear(256,1)
+			nn.Conv2d(channels, channels, kernel_size=3, padding=1),
+			nn.BatchNorm2d(channels)
 		)
 
-	def forward(self,x):
-		x = self.feature_extract(x)
+	def forward(self, x):
+		return torch.relu(x + self.block(x))
+
+
+
+class CNN_Model(nn.Module):
+	def __init__(self, input_planes=19, channels=64, num_blocks=20):
+		super().__init__()
+
+		
+		self.input_layer = nn.Sequential(
+			nn.Conv2d(input_planes, channels, kernel_size=3, padding=1),
+			nn.BatchNorm2d(channels),
+			nn.ReLU()
+		)
+
+		
+		self.res_blocks = nn.Sequential(
+			*[ResBlock(channels) for _ in range(num_blocks)]
+		)
+
+		
+
+		self.value_head = nn .Sequential(
+			nn.Conv2d(channels, 1, kernel_size=1),
+			nn.BatchNorm2d(1),
+			nn.ReLU(),
+		)
+		self.fc = nn.Sequential(
+			nn.Flatten(),
+			nn.Linear(8*8, 128),
+			nn.ReLU(),
+			nn.Linear(128, 1)
+		)
+
+	def forward(self, x):
+		x = self.input_layer(x)
+		x = self.res_blocks(x)
+		x = self.value_head(x)
 		x = self.fc(x)
 		return x
 
+def scores_to_policy(scores, temperature=1.0):
+	scores = torch.tensor(scores, dtype=torch.float32)
+	return torch.softmax(scores / temperature, dim=0)
 
 
 if __name__ == "__main__": 
@@ -59,11 +92,6 @@ if __name__ == "__main__":
 
 	train_df, test_df = train_test_split(dataframe, test_size=0.3, random_state=56)
 
-	mean = train_df["Evaluation"].mean()
-	std= train_df["Evaluation"].std()
-
-	train_df["Evaluation"] = (train_df["Evaluation"] - mean) / std
-	test_df["Evaluation"] = (test_df["Evaluation"] - mean) / std
 
 	train_dataset = MyDataset(train_df)
 	test_dataset = MyDataset(test_df)
@@ -136,4 +164,3 @@ if __name__ == "__main__":
 
 	torch.save(model.state_dict(), "evaluation_cnn_model.pth")
 	print("Model Saved")
-

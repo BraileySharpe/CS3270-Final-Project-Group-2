@@ -57,26 +57,40 @@ class ModelMoveProvider:
 
 	def choose_move(self, board: chess.Board) -> Optional[chess.Move]:
 		"""
-		Uses self.neighboring_states_FEN to determine the best legal move by evaluating each new position
-		with a CNN model
-		@returns the best chess move 
+		Evaluates all legal moves using the value head of the model,
+		converts the scores into a softmax probability distribution,
+		and selects the move with the highest probability.
 		"""
 		self.board_to_neighboring_states(board)
-		best_score = float("-inf")
-		best_move = None
 		FEN_parser = FEN_Parser()
+
+		scores = []
+		moves = []
 		for legal_move, FEN_state in self.neighboring_states_FEN:
 			numpy_arr = FEN_parser.generate_matrices(FEN_state)
-			tensor = torch.from_numpy(numpy_arr).to(device)
-			tensor = tensor.unsqueeze(0)
+			tensor = torch.from_numpy(numpy_arr).to(device).unsqueeze(0)
+
 			with torch.no_grad():
 				state_evaluation = self.model(tensor)
 				score = state_evaluation.item()
-				if score > best_score: 
-					best_move = legal_move
-					best_score = score
+			
+			scores.append(score)
+			moves.append(legal_move)
+
+		
+		score_tensor = torch.tensor(scores, dtype=torch.float32)
+
+	
+		temperature = 1.0
+		probabilities = torch.softmax(score_tensor / temperature, dim=0)
+
+	
+		best_index = torch.argmax(probabilities).item()
+		best_move = moves[best_index]
+
 		self.neighboring_states_FEN = None
 		return best_move
+
 		
 		
 model_moveProvider = ModelMoveProvider(model)
