@@ -1,6 +1,8 @@
 from typing import Optional, Protocol
 import chess
 import torch
+
+from evaluation_model.mini_max_searcher import mini_max_searcher
 from evaluation_model.model_training import CNN_Model 
 from Converter.Parse.FEN_Parser import FEN_Parser
 
@@ -91,9 +93,23 @@ class ModelMoveProvider:
 		self.neighboring_states_FEN = None
 		return best_move
 
+class ModelMinimaxProvider:
+    def __init__(self, model, depth=2):
+        self.model = model
+        self.parser = FEN_Parser()
+        self.device = device
+
+        self.searcher = mini_max_searcher(
+            model=self.model,
+            parser=self.parser,
+            device=self.device,
+            depth=depth
+        )
+
+    def choose_move(self, board: chess.Board) -> Optional[chess.Move]:
+        return self.searcher.find_best_move(board)
 		
-		
-model_moveProvider = ModelMoveProvider(model)
+model_moveProvider = ModelMinimaxProvider(model, 3)
 if __name__ == "__main__": 
 	mockBoard = chess.Board()
 	print(model_moveProvider.choose_move(mockBoard))
