@@ -49,7 +49,7 @@ class mini_max_searcher:
 
         material_score = self.material_eval(board)
 
-        return model_score + 0.5 * material_score
+        return model_score + 1.0 * material_score
 
     def ordered_moves(self, board: chess.Board):
         moves = list(board.legal_moves)
