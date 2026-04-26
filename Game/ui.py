@@ -23,8 +23,9 @@ from Game.config import (
     UNICODE_PIECES,
 )
 from Game.settings import GameSettings
-from Game.move_provider import MoveProvider, RandomMoveProvider, model_moveProvider
+from Game.move_provider import MoveProvider, model_moveProvider
 from Game.game_controller import GameController
+
 
 class ChessApp:
     def __init__(self, root: tk.Tk):
@@ -230,7 +231,9 @@ class GameFrame(tk.Frame):
 
         tk.Button(controls, text="Restart", width=12, command=self._restart_game).grid(row=0, column=0, padx=4, pady=4)
         tk.Button(controls, text="Undo", width=12, command=self._undo_move).grid(row=0, column=1, padx=4, pady=4)
-        tk.Button(controls, text="Main Menu", width=12, command=self.back_to_menu_callback).grid(row=1, column=0, columnspan=2, padx=4, pady=4)
+        tk.Button(controls, text="Main Menu", width=12, command=self.back_to_menu_callback).grid(row=1, column=0,
+                                                                                                 columnspan=2, padx=4,
+                                                                                                 pady=4)
 
     def _draw_board(self):
         self.canvas.delete("all")
