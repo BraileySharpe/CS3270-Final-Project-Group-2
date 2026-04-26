@@ -1,7 +1,7 @@
 from typing import Optional
 import chess
 import torch
-
+import time
 from Converter.Parse.FEN_Parser import FEN_Parser
 
 
@@ -21,6 +21,7 @@ class mini_max_searcher:
         self.parser = parser
         self.device = device
         self.depth = depth
+        self.eval_cache = dict()
 
     def material_eval(self, board: chess.Board) -> float:
         score = 0.0
@@ -41,12 +42,17 @@ class mini_max_searcher:
         if board.is_insufficient_material():
             return 0.0
 
-        nparr = self.parser.generate_matrices(board.fen())
-        tensor = torch.from_numpy(nparr).float().unsqueeze(0).to(self.device)
-
-        with torch.no_grad():
-            model_score = self.model(tensor).item()
-
+        key = board.fen()
+        if key in self.eval_cache: 
+            model_score = self.eval_cache[key]
+        else: 
+            nparr = self.parser.generate_matrices(board.fen())
+            tensor = torch.from_numpy(nparr).float().unsqueeze(0).to(self.device)
+           
+            with torch.no_grad():
+                model_score = self.model(tensor).item()
+                self.eval_cache[key] = model_score
+            
         material_score = self.material_eval(board)
 
         return model_score + 1.0 * material_score
@@ -55,23 +61,15 @@ class mini_max_searcher:
         moves = list(board.legal_moves)
 
         def move_score(move):
-            score = 0
-
-            if board.is_capture(move):
-                score += 10
-
             board.push(move)
-
-            if board.is_checkmate():
-                score += 10000
-            elif board.is_check():
-                score += 50
-
+            nump_arr = self.parser.generate_matrices(board.fen())
+            tensor = torch.from_numpy(nump_arr).unsqueeze(0).to(self.device)
+            score = self.model(tensor).item()
             board.pop()
-
             return score
 
-        return sorted(moves, key=move_score, reverse=True)
+        sorted_moves = sorted(moves, key=move_score, reverse=True)
+        return sorted_moves[:5]
 
     def minimax(self, board: chess.Board, depth: int, alpha: float, beta: float) -> float:
         if depth == 0 or board.is_game_over():
