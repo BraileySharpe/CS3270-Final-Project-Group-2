@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Protocol
 import chess
 import torch
@@ -8,7 +9,15 @@ from Converter.Parse.FEN_Parser import FEN_Parser
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN_Model().to(device)
-model.load_state_dict(torch.load("evaluation_cnn_model.pth", map_location=device))
+
+model_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "evaluation_cnn_model.pth")
+)
+
+print("Looking for model at:", model_path)
+print("Exists:", os.path.exists(model_path))
+
+model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 
 class MoveProvider(Protocol):
@@ -103,7 +112,9 @@ class ModelMinimaxProvider:
             model=self.model,
             parser=self.parser,
             device=self.device,
-            depth=depth
+            depth=3,
+            max_moves=8,
+            use_model=True
         )
 
     def choose_move(self, board: chess.Board) -> Optional[chess.Move]:

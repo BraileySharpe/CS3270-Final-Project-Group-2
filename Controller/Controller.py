@@ -7,16 +7,23 @@ import torch.nn.functional as F
 def generate_training_data():
     parser = FEN_Parser()
     data_rows = get_dataset(2000)
-    data_rows = data_rows.rename(columns={"FEN" : "tensor"})
-    for row in data_rows.itertuples(): 
-        data_rows.loc[row.Index, "tensor"] = parser.generate_matrices(row.tensor)
-        evaluation = data_rows.loc[row.Index, "Evaluation"]
-        if evaluation.startswith("#"): 
+
+    data_rows = data_rows.rename(columns={"FEN": "tensor"})
+    data_rows["tensor"] = data_rows["tensor"].astype(object)
+    data_rows["Evaluation"] = data_rows["Evaluation"].astype(object)
+    for row in data_rows.itertuples():
+        data_rows.at[row.Index, "tensor"] = parser.generate_matrices(row.tensor)
+
+        evaluation = data_rows.at[row.Index, "Evaluation"]
+
+        if evaluation.startswith("#"):
             evaluation = evaluation.strip("#")
+
         evaluation = int(evaluation)
-        evaluation = F.tanh(torch.tensor(evaluation/400))
-        evaluation = evaluation.item()
-        data_rows.loc[row.Index, "Evaluation"] = evaluation
+        evaluation = torch.tanh(torch.tensor(evaluation / 400.0)).item()
+
+        data_rows.at[row.Index, "Evaluation"] = evaluation
+
     return data_rows
 
 

@@ -1,8 +1,8 @@
-import tkinter as tk
+import tkinter
 from Game.ui import ChessApp
 
 def main():
-    root = tk.Tk()
+    root = tkinter.Tk()
     app = ChessApp(root)
     root.mainloop()
 
