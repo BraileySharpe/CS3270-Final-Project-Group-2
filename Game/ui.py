@@ -23,7 +23,7 @@ from Game.config import (
     UNICODE_PIECES,
 )
 from Game.settings import GameSettings
-from Game.move_provider import MoveProvider, RandomMoveProvider, model_moveProvider
+from Game.move_provider_tanh import MoveProvider, RandomMoveProvider, model_moveProvider
 from Game.game_controller import GameController
 
 class ChessApp:

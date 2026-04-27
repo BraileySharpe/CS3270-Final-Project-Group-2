@@ -3,8 +3,8 @@ from typing import Optional, Protocol
 import chess
 import torch
 
-from evaluation_model.mini_max_searcher import mini_max_searcher
-from evaluation_model.model_training import CNN_Model 
+from evaluation_model.mini_max_searcher_tanh import mini_max_searcher
+from evaluation_model.model_training_tanh import CNN_Model
 from Converter.Parse.FEN_Parser import FEN_Parser
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
