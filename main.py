@@ -1,9 +1,9 @@
-import tkinter
+import ttkbootstrap as ttk
 from Game.ui import ChessApp
 
 def main():
-    root = tkinter.Tk()
-    app = ChessApp(root)
+    root = ttk.Window(themename="darkly")
+    ChessApp(root)
     root.mainloop()
 
 
