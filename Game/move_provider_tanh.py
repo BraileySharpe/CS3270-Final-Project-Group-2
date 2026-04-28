@@ -77,12 +77,12 @@ class ModelMoveProvider:
 
 
 class ModelMinimaxProvider:
-    def __init__(self, model, depth=3, max_moves=12):
+    def __init__(self, model, searcher, depth=3, max_moves=12):
         self.model = model
         self.parser = FEN_Parser()
         self.device = device
 
-        self.searcher = mini_max_searcher(
+        self.searcher = searcher(
             model=self.model,
             parser=self.parser,
             device=self.device,

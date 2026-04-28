@@ -15,7 +15,7 @@ PIECE_VALUES = {
 }
 
 
-class mini_max_searcher:
+class mini_max_searcher_tanh:
     def __init__(
         self,
         model,

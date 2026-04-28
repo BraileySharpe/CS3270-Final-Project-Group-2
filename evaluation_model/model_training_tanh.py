@@ -115,56 +115,60 @@ if __name__ == "__main__":
 
     num_epochs = 40
 
-
     for epoch in range(num_epochs):
-
         model.train()
-        train_loss = 0
-        total = 0
+        train_loss = 0.0
+        train_samples = 0
 
         for tensor, evaluation in train_loader:
+            tensor = tensor.to(device)
+            evaluation = evaluation.to(device).view(-1, 1)
 
-            tensor, evaluation = tensor.to(device), evaluation.to(device)
             optimizer.zero_grad()
+
             output = model(tensor)
-
-            evaluation = evaluation.unsqueeze(1)
-
             loss = criterion(output, evaluation)
+
             loss.backward()
             optimizer.step()
 
-            train_loss += loss.item()
+            batch_size = tensor.size(0)
+            train_loss += loss.item() * batch_size
+            train_samples += batch_size
 
-        train_loss /= len(train_loader)
+        train_loss /= train_samples
         train_losses.append(train_loss)
 
         model.eval()
-        test_loss = 0
+        test_loss = 0.0
+        test_samples = 0
 
         with torch.no_grad():
             for tensor, evaluation in test_loader:
-                tensor, evaluation = tensor.to(device), evaluation.to(device)
+                tensor = tensor.to(device)
+                evaluation = evaluation.to(device).view(-1, 1)
+
                 output = model(tensor)
-                evaluation = evaluation.unsqueeze(1)
-
                 loss = criterion(output, evaluation)
-                test_loss += loss.item()
 
-        test_loss /= len(test_loader)
+                batch_size = tensor.size(0)
+                test_loss += loss.item() * batch_size
+                test_samples += batch_size
+
+        test_loss /= test_samples
         test_losses.append(test_loss)
 
         scheduler.step(test_loss)
 
-        print(f"Epoch {epoch+1}/{num_epochs}")
-        print(f"Train Loss: {train_loss:.4f}")
-        print(f"Test  Loss: {test_loss:.4f}")
-        print("-"*40)
+        print(f"Epoch {epoch + 1}/{num_epochs}")
+        print(f"Train Loss: {train_loss:.8f}")
+        print(f"Test  Loss: {test_loss:.8f}")
+        print("-" * 40)
 
     average_train_loss = sum(train_losses) / len(train_losses)
-    print(f"Average Training Loss: {average_train_loss:.4f}")
+    print(f"Average Training Loss: {average_train_loss:.8f}")
     average_test_loss = sum(test_losses) / len(test_losses)
-    print(f"Average Testing Loss: {average_test_loss:.4f}")
+    print(f"Average Testing Loss: {average_test_loss:.8f}")
 
     torch.save(model.state_dict(), "../evaluation_cnn_model.pth")
     print("Model Saved")
