@@ -170,5 +170,5 @@ if __name__ == "__main__":
     average_test_loss = sum(test_losses) / len(test_losses)
     print(f"Average Testing Loss: {average_test_loss:.8f}")
 
-    torch.save(model.state_dict(), "../evaluation_cnn_model.pth")
+    torch.save(model.state_dict(), "../comparison/evaluation_cnn_model.pth")
     print("Model Saved")

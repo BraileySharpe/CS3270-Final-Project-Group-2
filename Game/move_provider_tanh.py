@@ -3,8 +3,8 @@ import chess
 import torch
 
 from evaluation_model.mini_max_searcher import mini_max_searcher
-from evaluation_model.model_training import CNN_Model
 from Converter.Parse.FEN_Parser import FEN_Parser
+from evaluation_model.model_training_tanh import CNN_Model
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN_Model().to(device)
@@ -77,7 +77,7 @@ class ModelMoveProvider:
 
 
 class ModelMinimaxProvider:
-    def __init__(self, model, searcher, depth=3, max_moves=12):
+    def __init__(self, searcher, model, depth=3, max_moves=12):
         self.model = model
         self.parser = FEN_Parser()
         self.device = device
@@ -94,8 +94,7 @@ class ModelMinimaxProvider:
         return self.searcher.find_best_move(board)
 
 
-model_moveProvider = ModelMinimaxProvider(model=model, depth=3, max_moves=10)
 
 if __name__ == "__main__":
     mockBoard = chess.Board()
-    print(model_moveProvider.choose_move(mockBoard))
+
