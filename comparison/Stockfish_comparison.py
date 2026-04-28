@@ -211,18 +211,13 @@ if __name__ == "__main__":
     try:
         model_provider = ModelMoveProvider(
             ##change the search type here to minimax/negamax
-            searcher=negamax_searcher,
-            model=tanh_model,
+            searcher=mini_max_searcher,
+            model=model,
             depth=3,
             max_moves=10
         )
 
-        dummy_provider = ModelMoveProvider(
-            searcher=mini_max_searcher,
-            model=tanh_model,
-            depth=3,
-            max_moves=10
-        )
+        dummy_provider = RandomMoveProvider()
 
         analyzer = ModelVsDummyStockfishAnalyzer(
             model_provider=model_provider,
