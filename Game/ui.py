@@ -33,7 +33,7 @@ from Game.config import (
     HOVER_BG
 )
 from Game.settings import GameSettings
-from Game.move_provider import MoveProvider, model_moveProvider
+from Game.move_provider import model_moveProvider
 from Game.game_controller import GameController
 
 APP_BG = "#111827"

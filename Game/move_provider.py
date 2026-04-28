@@ -2,14 +2,12 @@ from typing import Optional, Protocol
 import chess
 import torch
 
-from evaluation_model.mini_max_searcher import mini_max_searcher
-from evaluation_model.model_training import CNN_Model
+from evaluation_model.negamax_searcher import negamax_searcher
 from Converter.Parse.FEN_Parser import FEN_Parser
+from evaluation_model.model_training_tanh import CNN_Model_tanh 
+from evaluation_model.model_training import CNN_Model
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = CNN_Model().to(device)
-model.load_state_dict(torch.load("evaluation_cnn_model.pth", map_location=device))
-model.eval()
+
 
 
 class MoveProvider(Protocol):
@@ -76,13 +74,13 @@ class ModelMoveProvider:
         return best_move
 
 
-class ModelMinimaxProvider:
-    def __init__(self, model, depth=3, max_moves=12):
+class ModelMoveProvider:
+    def __init__(self, searcher, model, depth=3, max_moves=12):
         self.model = model
         self.parser = FEN_Parser()
         self.device = device
 
-        self.searcher = mini_max_searcher(
+        self.searcher = searcher(
             model=self.model,
             parser=self.parser,
             device=self.device,
@@ -93,9 +91,16 @@ class ModelMinimaxProvider:
     def choose_move(self, board: chess.Board) -> Optional[chess.Move]:
         return self.searcher.find_best_move(board)
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = CNN_Model().to(device)
+model.load_state_dict(torch.load("evaluation_cnn_model.pth", map_location=device))
+model.eval()
 
-model_moveProvider = ModelMinimaxProvider(model=model, depth=3, max_moves=10)
-
+##using the non-tanh version of the model for the game with negamax search
+model_moveProvider = ModelMoveProvider(
+    model=model, 
+    searcher=negamax_searcher
+)
 if __name__ == "__main__":
     mockBoard = chess.Board()
-    print(model_moveProvider.choose_move(mockBoard))
+
