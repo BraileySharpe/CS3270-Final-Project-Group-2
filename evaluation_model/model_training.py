@@ -105,8 +105,8 @@ if __name__ == "__main__":
 	test_losses = []
 
 
-	criterion = nn.MSELoss()
-	optimizer = optim.Adam(model.parameters(), lr=0.001)
+	criterion = nn.SmoothL1Loss()
+	optimizer = optim.AdamW(model.parameters(), lr=0.001)
 	scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
 
 	num_epochs = 40
