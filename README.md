@@ -1,4 +1,4 @@
-# ♟️ CS3270 Final Project – Chess Engine with AI
+# ♟️ CS3270 Final Project: Chess Engine with CNN & Search
 
 ### **Authors**
 
