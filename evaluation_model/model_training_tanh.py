@@ -22,9 +22,6 @@ class MyDataset(Dataset):
         evaluation = self.data.iloc[idx, 1]
 
         tensor = torch.tensor(tensor, dtype=torch.float32)
-
-        # normalize centipawns here
-        evaluation = np.tanh(evaluation / 400.0)
         evaluation = torch.tensor(evaluation, dtype=torch.float32)
 
         return tensor, evaluation
